@@ -37,10 +37,10 @@ Usage
 			symbol_attribute :payment_status
 		end
 
-__Home page__ - [invoscape.com/open_source#gogogo](http://www.invoscape.com/open_source#gogogo)
+__Home page__ - [invoscape.com/open_source#gogogo](http://www.invoscape.com/open_source#symbolify)
 
 __Want to contribute ?__ - Drop in a mail to opensource(at)invoscape(dot)com
 
-Please do report any issues you face - [issues](https://github.com/invoscape/go_go_go/issues)
+Please do report any issues you face - [issues](https://github.com/invoscape/symbolify/issues)
 
 Copyright &copy; [Invoscape Technologies Pvt. Ltd.](http://www.invoscape.com), released under the MIT license
