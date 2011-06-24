@@ -37,7 +37,7 @@ Usage
 			symbol_attribute :payment_status
 		end
 
-__Home page__ - [invoscape.com/open_source#gogogo](http://www.invoscape.com/open_source#symbolify)
+__Home page__ - [invoscape.com/open_source#symbolify](http://www.invoscape.com/open_source#symbolify)
 
 __Want to contribute ?__ - Drop in a mail to opensource(at)invoscape(dot)com
 
