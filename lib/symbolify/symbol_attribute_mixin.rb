@@ -1,53 +1,42 @@
 module SymbolAttributeMixin
+    #--- Trigger when include to a model
     private
     def self.included(base)
-        base.class_eval do
-            attr_reader :after_initialize #- This method should be defined since after_initialize is used as macro
-        end
-        
-        #--- Bind active record callbacks (in instance level) to process symbol attributes
-        base.after_initialize :load_symbol_attributes
-        base.before_save :save_symbol_attributes
-        base.after_save :load_symbol_attributes
-        
-        #--- Method for declaratively calling from a model to create an symbol attribute
-        private 
-        def base.symbol_attribute(attribute_name)
-            #--- Store the attribute info in an array
-            @symbol_attributes ||= Array.new
-            @symbol_attributes.push(attribute_name)
-            
-            #--- Method to expose the symbol attributes list to instance methods
-            private
-            def self.symbol_attributes
-                return @symbol_attributes
+        #--- Add a method for symbol_attribute inside the model
+        private
+        def base.symbol_attribute(*attributes)
+            attributes.each do |attribute|
+                create_methods_for_symbol_attribute(attribute.to_s)
             end
         end
-    end
-    
-    private
-    def load_symbol_attributes
-        return if not self.class.respond_to?(:symbol_attributes)
         
-        @symbol_attributes = self.class.symbol_attributes
-        
-        @symbol_attributes.each do |attr_name|
-            attribute_value = read_attribute(attr_name)
-            
-            #--- Convert string to equivalent symbol
-            if attribute_value.is_a?(String)
-                write_attribute(attr_name, attribute_value.to_eqv_sym)
+        def base.create_methods_for_symbol_attribute(attribute_name)
+            self.class_eval do
+                #--- Create methods for the symbol attribute
+                # Try someother better method than eval %Q{ } to include these methods into the class
+                # Check the error with missing attribute. https://rails.lighthouseapp.com/projects/8994/tickets/3165-activerecordmissingattributeerror-after-update-to-rails-v-234
+                # Only so, we have used the read_attribute and write_attribute
+                eval %Q{
+                    def #{attribute_name}
+                    	value_from_db = read_attribute("#{attribute_name}_symbol".to_sym)
+                    	
+                        return nil if value_from_db.nil?
+                    
+                        return value_from_db.to_eqv_sym
+                    end
+                    
+                    def #{attribute_name}=(value)
+                        if value.nil?
+                            write_attribute("#{attribute_name}_symbol".to_sym, nil)
+                            return
+                        end
+                        
+                        raise "The value for this symbol attribute must be a symbol only" if not value.is_a? Symbol
+                        
+                        write_attribute("#{attribute_name}_symbol".to_sym, value.to_eqv_s)
+                    end
+                }
             end
-        end
-    end
-    
-    private
-    def save_symbol_attributes
-        return if not self.class.respond_to?(:symbol_attributes)
-        
-        @symbol_attributes.each do |attr_name|
-            #--- Convert from symbol to equivalent string
-            write_attribute(attr_name, read_attribute(attr_name).to_eqv_s) if not read_attribute(attr_name).nil?
         end
     end
 end

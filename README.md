@@ -30,12 +30,24 @@ Usage
 +	Copy the entire plugin into __vendor/plugins/__ folder or execute
 
 		rails plugin install git://github.com/invoscape/symbolify.git
+
++	You get two methods
+	to_eqv_s - To convert a symbol to string
+	to_eqv_sym - To convert a string to symbol
 		
-+	In the model (say Payment) where you want to expose an attribute (say payment_status) as symbol, include this line in the model along with other attr_accessors (if any)
++	In the model (say Payment) where you want to expose an attribute (say payment_status) as symbol, name your column as payment_status_symbol
+
++	Include this line in the model along with other attr_accessors
 		
 		class Payment < ActiveRecord::Base
 			symbol_attribute :payment_status
 		end
+		
++	To get the value as symbol refer the attribute as payment.payment_status.
+	Similarly you get a setter eg. payment.payment_status = :paid
+
++	While using finder methods mention the original column name i.e. payment_status_symbol
+	eg. Payment.find_by_payment_status_symbol(:paid.to_eqv_s)
 
 __Home page__ - [invoscape.com/open_source#symbolify](http://www.invoscape.com/open_source#symbolify)
 
